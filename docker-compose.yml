@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: admin_user
+      POSTGRES_PASSWORD: admin_pass
+      POSTGRES_DB: datastitcher
+    ports:
+      - "5432:5432"
+
+  fastapi:
+    build: ./api
+    ports:
+      - "8000:8000"
+
+  airflow:
+    image: puckel/docker-airflow
+    environment:
+      - LOAD_EX=n
+      - EXECUTOR=SequentialExecutor
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./airflow/dags:/usr/local/airflow/dags
+
+  metabase:
+    image: metabase/metabase
+    ports:
+      - "3000:3000"
