@@ -1,3 +1,18 @@
+x-airflow-common:
+  &airflow-common
+  image: apache/airflow:2.8.1
+  environment:
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://admin_user:admin_pass@postgres:5432/datastitcher
+    AIRFLOW__CORE__FERNET_KEY: ''
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'False'
+  volumes:
+    - ./airflow/dags:/opt/airflow/dags
+    - ./airflow/logs:/opt/airflow/logs
+    - ./airflow/plugins:/opt/airflow/plugins
+  depends_on:
+    - postgres
+
 services:
   postgres:
     image: postgres
@@ -7,23 +22,46 @@ services:
       POSTGRES_DB: datastitcher
     ports:
       - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin_user -d datastitcher" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   fastapi:
-    build: ./api
+    build:
+      context: .
+      dockerfile: /api/Dockerfile
     ports:
       - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
 
-  airflow:
-    image: puckel/docker-airflow
-    environment:
-      - LOAD_EX=n
-      - EXECUTOR=SequentialExecutor
+  airflow-init:
+    <<: *airflow-common
+    entrypoint: bash -c "airflow db migrate && airflow users create --username admin --password admin --firstname First --lastname Last --role Admin --email admin@example.com"
+    depends_on:
+      - postgres
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
     ports:
       - "8080:8080"
-    volumes:
-      - ./airflow/dags:/usr/local/airflow/dags
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
 
   metabase:
     image: metabase/metabase
     ports:
       - "3000:3000"
+
+volumes:
+  postgres_data:
