@@ -1,0 +1,5 @@
+sources:
+  - name: postgres_data
+    schema: public  # or whatever schema your raw table is in
+    tables:
+      - name: sales_data

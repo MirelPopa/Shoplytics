@@ -1,0 +1,16 @@
+version: 2
+
+sources:
+  - name: stg_postgres_data
+    schema: public  # or whatever schema your raw table is in
+    tables:
+      - name: sales_data
+
+models:
+  - name: sales_data
+    description: "Raw sales data coming straight from the API endpoint"
+    columns:
+      - name: order_id
+        tests: [not_null, unique]
+      - name: product_id
+        tests: [not_null]
