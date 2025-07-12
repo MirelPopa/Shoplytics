@@ -2,6 +2,7 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from db.main import Base
+from db.models import Product, SalesData
 import os
 
 # Use env var or fallback to localhost
@@ -22,3 +23,15 @@ def test_db_session():
         yield db
     finally:
         db.close()
+
+@pytest.fixture()
+def clean_test_data(test_db_session):
+    # Clean relevant tables before each test
+    test_db_session.query(SalesData).delete()
+    test_db_session.query(Product).delete()
+    test_db_session.commit()
+    yield
+    # Optional: cleanup again after test
+    test_db_session.query(SalesData).delete()
+    test_db_session.query(Product).delete()
+    test_db_session.commit()
