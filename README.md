@@ -102,8 +102,7 @@ Metabase connects directly to the Postgres models created by dbt.
 - [x] Dockerized deployment
 - [x] GitHub Actions with tests
 - [x] Metabase dashboards
-- [ ] Finalize Airflow DAGs (API call → dbt → Metabase refresh)
-- [ ] Optional: Trigger Metabase card refresh via API
+- [x] Finalize Airflow DAGs (API call → dbt → Metabase refresh)
 - [ ] Deploy to cloud (Render, Railway, etc.)
 
 ---
