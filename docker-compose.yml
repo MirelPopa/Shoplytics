@@ -1,17 +1,25 @@
 x-airflow-common:
   &airflow-common
-  image: apache/airflow:2.8.1
+  build:
+    context: .
+    dockerfile: Dockerfile.airflow
   environment:
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://admin_user:admin_pass@postgres:5432/datastitcher
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__LOAD_EXAMPLES: 'False'
+    PYTHONPATH: /opt/airflow:/opt/airflow/db
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
     - ./airflow/plugins:/opt/airflow/plugins
+    - ./:/opt/airflow/project
+    - ./.dbt:/home/airflow/.dbt
+    - ./db:/opt/airflow/db
+    - ./seeds:/opt/airflow/seeds
   depends_on:
     - postgres
+
 
 services:
   postgres:
@@ -62,6 +70,9 @@ services:
     image: metabase/metabase
     ports:
       - "3000:3000"
+    environment:
+      - MB_ENABLE_CACHE=false
+      - MB_CACHE_TTL=0
 
 volumes:
   postgres_data:

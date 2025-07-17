@@ -1,0 +1,7 @@
+FROM apache/airflow:2.8.1
+
+USER airflow
+
+# Install dbt core and the adapter (e.g. postgres)
+COPY requirements.txt .
+RUN pip install --no-cache-dir dbt-core dbt-postgres && pip install -r requirements.txt

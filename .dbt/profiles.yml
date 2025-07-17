@@ -1,0 +1,12 @@
+DataStitcher:
+  outputs:
+    dev:
+      dbname: datastitcher
+      host: postgres
+      password: admin_pass
+      port: 5432
+      schema: public
+      threads: 1
+      type: postgres
+      user: admin_user
+  target: dev

@@ -1,3 +1,9 @@
+{{ config(
+    materialized='view',
+    backup=False
+) }}
+
+
 with sales as (
     select *
     from {{ source('postgres_data', 'sales_data') }}

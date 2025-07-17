@@ -9,6 +9,5 @@ def health_check():
 
 @fast_api_app.get("/sales")
 def get_sales():
-    generated_records_list = generate_fake_sales(5)
-    return generated_records_list
-
+    generate_fake_sales(5)
+    return "Success"

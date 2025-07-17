@@ -7,7 +7,7 @@ sources:
       - name: sales_data
 
 models:
-  - name: sales_data
+  - name: stg_sales
     description: "Raw sales data coming straight from the API endpoint"
     columns:
       - name: order_id

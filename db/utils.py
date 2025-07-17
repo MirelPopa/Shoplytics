@@ -1,6 +1,7 @@
 import csv
 import argparse
 from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy import text
 from faker import Faker
 from random import uniform, choice, randint
 from db.main import generate_tables, get_db_context
@@ -33,8 +34,11 @@ def generate_fake_sales(n=1000):
             db.add(record)
             records_list.append(record)
         db.commit()
+
+        row_count = db.execute(text("SELECT COUNT(*) FROM sales_data")).scalar()
+        print(f"Row count after insert: {row_count}")
+
         print(f"Successfully inserted {n} records into sales_data.")
-        return records_list
 
 def generate_fake_products(n=10):
     PRODUCT_NAMES = [
